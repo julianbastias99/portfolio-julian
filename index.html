@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Julián Bastías | Portfolio</title>
+    <style>
+        /* --- VARIABLES Y CONFIGURACIÓN BASE --- */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --glass-bg: rgba(255, 255, 255, 0.5);
+            --glass-border: rgba(255, 255, 255, 0.7);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 5rem 2rem;
+            flex-grow: 1;
+        }
+
+        /* --- EFECTO GLASSMORPHISM --- */
+        .glass, .glass-effect {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        /* --- SECCIÓN HERO --- */
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            margin-bottom: 5rem;
+        }
+
+        .profile-img {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 1.5rem auto;
+            display: block;
+            border: 2px solid var(--glass-border);
+            box-shadow: var(--shadow);
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 300;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .career-reveal-container {
+            display: inline-block;
+            position: relative;
+            margin-bottom: 2rem;
+            cursor: default;
+            padding: 0.5rem 1rem;
+        }
+
+        .career-title {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .career-details {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.4s ease-in-out;
+            font-size: 1rem;
+            color: var(--text-main);
+            margin-top: 0;
+        }
+
+        .career-reveal-container:hover .career-details {
+            max-height: 50px;
+            opacity: 1;
+            margin-top: 0.5rem;
+        }
+
+        .hero p.intro {
+            max-width: 600px;
+            margin: 0 auto;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        section h2 {
+            font-size: 1.2rem;
+            font-weight: 400;
+            margin-bottom: 2rem;
+            text-align: center;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* --- GALERÍA DE TRABAJOS --- */
+        .work-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 5rem;
+        }
+
+        .project-card {
+            aspect-ratio: 4/3;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 45px rgba(0, 0, 0, 0.08);
+        }
+
+        .cover-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .project-card:hover .cover-img {
+            transform: scale(1.03);
+        }
+
+        .project-label {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem 1rem 1rem 1rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+            color: white;
+            font-size: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-align: center;
+            z-index: 5;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .project-card:hover .project-label {
+            opacity: 1;
+        }
+
+        .placeholder-text {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+        }
+
+        /* --- MODALES DE PROYECTOS --- */
+        .modal {
+            position: fixed;
+            top: 100vh;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 9999;
+            background: rgba(245, 247, 250, 0.95);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            transition: top 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .modal.active {
+            top: 0;
+        }
+
+        .modal-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 6rem 1rem 4rem 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* NUEVO: Se agregó "video" para que tengan el mismo estilo que las imágenes */
+        .modal-content img, .modal-content video {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: block;
+        }
+
+        .close-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 0.8rem 2rem;
+            border: none;
+            color: var(--text-main);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            z-index: 10000;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.8);
+            transform: translateY(-2px);
+        }
+
+        /* --- HERRAMIENTAS --- */
+        .tools {
+            text-align: center;
+            margin-bottom: 5rem;
+            padding: 3rem;
+        }
+
+        .tools-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            list-style: none;
+        }
+
+        .tools-list li {
+            padding: 0.6rem 1.5rem;
+            font-size: 0.9rem;
+            letter-spacing: 0.02em;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .tool-icon {
+            width: 18px;
+            height: 18px;
+            object-fit: contain;
+        }
+
+        /* --- CONTACTO --- */
+        .contact {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .contact a {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            color: var(--text-main);
+            text-decoration: none;
+            transition: transform 0.3s ease, background 0.3s ease;
+            font-weight: 500;
+        }
+
+        .contact a:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        /* --- FOOTER EASTER EGG --- */
+        footer.glass-effect {
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: auto;
+            border-radius: 0;
+            border-left: none;
+            border-right: none;
+            border-bottom: none;
+            cursor: default;
+            position: relative;
+        }
+
+        .reveal-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        footer .reveal-text {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.5s ease-in-out;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 0;
+            max-width: 600px;
+        }
+
+        footer .reveal-title {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            transition: color 0.3s ease;
+        }
+
+        footer.glass-effect:hover .reveal-text {
+            max-height: 100px;
+            opacity: 1;
+            margin-top: 0.5rem;
+        }
+
+        footer.glass-effect:hover .reveal-title {
+            color: var(--text-main);
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.2rem; }
+            .container { padding: 3rem 1.5rem; }
+            .project-label { opacity: 1; } 
+            .modal-content { padding-top: 5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="container">
+        
+        <section class="hero glass">
+            <img src="/WhatsApp Image 2025-12-03 at 12.53.11.jpeg" alt="Julián Bastías" class="profile-img">
+            
+            <h1>Julián Bastías</h1>
+            
+            <div class="career-reveal-container">
+                <div class="career-title">Perfil Creativo</div>
+                <div class="career-details">
+                    Diseñador Gráfico · Editor de Video · Visuales con IA
+                </div>
+            </div>
+
+            <p class="intro">
+                Apasionado por el diseño, la comunicación visual y la experimentación con herramientas creativas. Fuera de la pantalla, disfruto de la música, cocinar y explorar nuevas ideas.
+            </p>
+        </section>
+
+        <section id="work">
+            <h2>Trabajos Seleccionados</h2>
+            <div class="work-grid">
+                
+                <div class="project-card glass" onclick="openModal('modal-chilly')">
+                    <img src="/Chilly BEHANCE/Frame.png" class="cover-img" alt="Portada Chilly">
+                    <div class="project-label">Chilly - App Bienestar Mental</div>
+                </div>
+
+                <div class="project-card glass" onclick="openModal('modal-pinon')">
+                    <img src="/EL Piñon/1.png" class="cover-img" alt="Portada El Piñón">
+                    <div class="project-label">El Piñón - Identidad Visual</div>
+                </div>
+
+                <div class="project-card glass" onclick="openModal('modal-motionar')">
+                    <img src="/MOTIONAR/Frame 1.png" class="cover-img" alt="Portada MOTIONAR">
+                    <div class="project-label">MOTIONAR</div>
+                </div>
+
+                <div class="project-card glass" onclick="openModal('modal-marketplace')">
+                    <img src="/Ux Research/1.png" class="cover-img" alt="Portada UX Research Marketplace">
+                    <div class="project-label">UX RESEARCH MARKETPLACE</div>
+                </div>
+                
+            </div>
+        </section>
+
+        <section id="practices">
+            <h2>Prácticas y Exploración</h2>
+            <div class="work-grid">
+                
+                <div class="project-card glass" onclick="openModal('modal-iesmb')">
+                    <img src="/IESMB/Slide 16_9 - 1.png" class="cover-img" alt="Portada IESMB">
+                    <div class="project-label">Rediseño IES MB 9008</div>
+                </div>
+
+                <div class="project-card glass" onclick="openModal('modal-frontend')">
+                    <img src="/IESMB/daily.png " class="cover-img" alt="Prácticas Front-end">
+                    <div class="project-label">Prácticas HTML, CSS y JS</div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="tools" class="tools glass">
+            <h2>Herramientas y Tecnologías</h2>
+            <ul class="tools-list">
+                <li class="glass">
+                    <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="#2d3436" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect>
+                        <text x="6" y="16" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#2d3436" stroke="none">Ps</text>
+                    </svg>
+                    Photoshop
+                </li>
+                <li class="glass">
+                    <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="#2d3436" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect>
+                        <text x="7" y="16" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#2d3436" stroke="none">Ai</text>
+                    </svg>
+                    Illustrator
+                </li>
+                <li class="glass">
+                    <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="#2d3436" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="4" ry="4"></rect>
+                        <text x="5.5" y="16" font-family="Arial, sans-serif" font-size="11" font-weight="bold" fill="#2d3436" stroke="none">Ae</text>
+                    </svg>
+                    After Effects
+                </li>
+                <li class="glass">
+                    <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="#2d3436" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 5.5A3.5 3.5 0 0 1 8.5 2H12v7H8.5A3.5 3.5 0 0 1 5 5.5z"></path>
+                        <path d="M12 2h3.5a3.5 3.5 0 1 1 0 7H12V2z"></path>
+                        <path d="M12 9H8.5a3.5 3.5 0 1 0 0 7H12V9z"></path>
+                        <path d="M12 16H8.5a3.5 3.5 0 1 0 3.5 3.5V16z"></path>
+                        <path d="M12 9v7a3.5 3.5 0 1 0 3.5-3.5A3.5 3.5 0 0 0 12 9z"></path>
+                    </svg>
+                    Figma
+                </li>
+                <li class="glass">
+                    <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="#2d3436" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect>
+                        <line x1="7" y1="2" x2="7" y2="22"></line>
+                        <line x1="17" y1="2" x2="17" y2="22"></line>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <line x1="2" y1="7" x2="7" y2="7"></line>
+                        <line x1="2" y1="17" x2="7" y2="17"></line>
+                        <line x1="17" y1="17" x2="22" y2="17"></line>
+                        <line x1="17" y1="7" x2="22" y2="7"></line>
+                    </svg>
+                    CapCut
+                </li>
+                <li class="glass">
+                    <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="#2d3436" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                        <path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/>
+                    </svg>
+                    IA Generativa
+                </li>
+                <li class="glass">
+                    <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="#2d3436" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3h18l-1.5 14.5L12 21l-7.5-3.5L3 3z"/>
+                        <path d="M7.5 7h9l-.5 5h-8l.25 2.5 3.75 1 3.75-1 .1-1.5"/>
+                    </svg>
+                    HTML
+                </li>
+                <li class="glass">
+                    <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="#2d3436" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3h18l-1.5 14.5L12 21l-7.5-3.5L3 3z"/>
+                        <path d="M16.5 7h-9l.25 2.5h8l-.5 5-3.25 1-3.25-1-.1-1.5"/>
+                    </svg>
+                    CSS
+                </li>
+                <li class="glass">
+                    <svg class="tool-icon" viewBox="0 0 24 24" fill="none" stroke="#2d3436" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <text x="17" y="17" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#2d3436" stroke="none" text-anchor="end">JS</text>
+                    </svg>
+                    JavaScript
+                </li>
+            </ul>
+        </section>
+
+        <section id="contact" class="contact">
+            <h2>Hablemos</h2>
+            <a href="mailto:tu-correo@ejemplo.com" class="glass">Enviar un mensaje</a>
+        </section>
+
+    </main>
+
+    <footer class="glass-effect">
+        <div class="reveal-item">
+            <span class="reveal-title">Julián Bastías &copy; 2026</span>
+            <p class="reveal-text">Diseñador UX/UI - Especializado en interfaces interactivas, prototipado funcional y sistemas de diseño escalables.</p>
+        </div>
+    </footer>
+
+
+    <div id="modal-chilly" class="modal">
+        <button class="close-btn glass" onclick="closeModal('modal-chilly')">✕ Cerrar Proyecto</button>
+        <div class="modal-content">
+            <img src="/Chilly BEHANCE/Frame.png" alt="Chilly - Portada">
+            <img src="/Chilly BEHANCE/Frame-1.png" alt="Chilly - Intro">
+            <img src="/Chilly BEHANCE/Frame-2.png" alt="Chilly - Desk Research 1">
+            <img src="/Chilly BEHANCE/Frame-3.png" alt="Chilly - Desk Research 2">
+            <img src="/Chilly BEHANCE/Frame-4.png" alt="Chilly - Benchmarking">
+            <img src="/Chilly BEHANCE/Frame-5.png" alt="Chilly - User Persona">
+            <img src="/Chilly BEHANCE/Frame-6.png" alt="Chilly - POV">
+            <img src="/Chilly BEHANCE/Frame-7.png" alt="Chilly - Storyboard">
+            <img src="/Chilly BEHANCE/Frame-8.png" alt="Chilly - Taskflow">
+            <img src="/Chilly BEHANCE/Frame-9.png" alt="Chilly - Wireframes">
+            <img src="/Chilly BEHANCE/Frame-10.png" alt="Chilly - Wireframes">
+            <img src="/Chilly BEHANCE/Frame-11.png" alt="Chilly - Wireframes">
+            <img src="/Chilly BEHANCE/Frame-12.png" alt="Chilly - Wireframes">
+            <img src="/Chilly BEHANCE/Frame-13.png" alt="Chilly - Wireframes">
+            <img src="/Chilly BEHANCE/Frame-14.png" alt="Chilly - Wireframes">
+            <img src="/Chilly BEHANCE/Frame-15.png" alt="Chilly - Wireframes">
+            <img src="/Chilly BEHANCE/Frame-16.png" alt="Chilly - Wireframes">
+        </div>
+    </div>
+
+    <div id="modal-pinon" class="modal">
+        <button class="close-btn glass" onclick="closeModal('modal-pinon')">✕ Cerrar Proyecto</button>
+        <div class="modal-content">
+            <img src="/EL Piñon/1.png" alt="El Piñón - Portada">
+            <img src="/EL Piñon/2.png" alt="El Piñón - Concepto">
+            <img src="/EL Piñon/3.png" alt="El Piñón - Por qué">
+            <img src="/EL Piñon/4.png" alt="El Piñón - Tipografías y Colores">
+            <img src="/EL Piñon/5.png" alt="El Piñón - Logos Negativos">
+            <img src="/EL Piñon/6.png" alt="El Piñón - Logos Positivos">
+            <img src="/EL Piñon/7.png" alt="El Piñón - Redes Sociales">
+        </div>
+    </div>
+
+    <div id="modal-motionar" class="modal">
+        <button class="close-btn glass" onclick="closeModal('modal-motionar')">✕ Cerrar Proyecto</button>
+        <div class="modal-content">
+            <img src="/MOTIONAR/Frame 1.png" alt="MOTIONAR - Inicio">
+            <img src="/MOTIONAR/Frame 2.png" alt="MOTIONAR - Wireframes">
+            <img src="/MOTIONAR/Frame 3.png" alt="MOTIONAR - UI">
+            <img src="/MOTIONAR/Frame 4.png" alt="MOTIONAR - UI">
+            <img src="/MOTIONAR/Frame 5.png" alt="MOTIONAR - UI">
+            <img src="/MOTIONAR/Frame 6.png" alt="MOTIONAR - UI">
+            <img src="/MOTIONAR/Frame 7.png" alt="MOTIONAR - UI">
+            <img src="/MOTIONAR/Frame 8.png" alt="MOTIONAR - UI">
+            <img src="/MOTIONAR/Frame 9.png" alt="MOTIONAR - UI">
+            <img src="/MOTIONAR/Frame 10.png" alt="MOTIONAR - UI">
+            <img src="/MOTIONAR/Frame 11.png" alt="MOTIONAR - UI">
+            <img src="/MOTIONAR/Frame 12.png" alt="MOTIONAR - UI">
+            <img src="/MOTIONAR/Frame 13.png" alt="MOTIONAR - UI">
+            <img src="/MOTIONAR/Frame 14.png" alt="MOTIONAR - UI">
+            <img src="/MOTIONAR/Frame 15.png" alt="MOTIONAR - UI">
+            <img src="/MOTIONAR/Frame 16.png" alt="MOTIONAR - UI">
+            <img src="/MOTIONAR/Frame 17.png" alt="MOTIONAR - UI">
+            <img src="/MOTIONAR/Frame 18.png" alt="MOTIONAR - UI">
+        </div>
+    </div>
+
+    <div id="modal-marketplace" class="modal">
+        <button class="close-btn glass" onclick="closeModal('modal-marketplace')">✕ Cerrar Proyecto</button>
+        <div class="modal-content">
+            <img src="/Ux Research/1.png" alt="UX Research - Proceso">
+            <img src="/Ux Research/2.png" alt="UX Research - Entrevistas">
+            <img src="/Ux Research/3.png" alt="UX Research - Resultados">
+            <img src="/Ux Research/4.png" alt="UX Research - Resultados">
+            <img src="/Ux Research/5.png" alt="UX Research - Proceso">
+            <img src="/Ux Research/6.png" alt="UX Research - Entrevistas">
+            <img src="/Ux Research/7.png" alt="UX Research - Resultados">
+            <img src="/Ux Research/8.png" alt="UX Research - Resultados">
+            <img src="/Ux Research/9.png" alt="UX Research - Proceso">
+            <img src="/Ux Research/10.png" alt="UX Research - Entrevistas">
+            <img src="/Ux Research/11.png" alt="UX Research - Resultados">
+            <img src="/Ux Research/12.png" alt="UX Research - Resultados">
+            <img src="/Ux Research/13.png" alt="UX Research - Proceso">
+            <img src="/Ux Research/14.png" alt="UX Research - Entrevistas">
+            <img src="/Ux Research/15.png" alt="UX Research - Resultados">
+            <img src="/Ux Research/16.png" alt="UX Research - Resultados">
+            <img src="/Ux Research/17.png" alt="UX Research - Proceso">
+            <img src="/Ux Research/18.png" alt="UX Research - Entrevistas">
+            <img src="/Ux Research/19.png" alt="UX Research - Resultados">
+            <img src="/Ux Research/20.png" alt="UX Research - Resultados">
+            <img src="/Ux Research/21.png" alt="UX Research - Proceso">
+            <img src="/Ux Research/22.png" alt="UX Research - Entrevistas">
+            <img src="/Ux Research/23.png" alt="UX Research - Resultados">
+            <img src="/Ux Research/24.png" alt="UX Research - Resultados">
+            <img src="/Ux Research/25.png" alt="UX Research - Proceso">
+            <img src="/Ux Research/26.png" alt="UX Research - Entrevistas">
+            <img src="/Ux Research/27.png" alt="UX Research - Resultados">
+            <img src="/Ux Research/28.png" alt="UX Research - Resultados">
+            <img src="/Ux Research/29.png" alt="UX Research - Proceso">
+            <img src="/Ux Research/30.png" alt="UX Research - Entrevistas">
+            <img src="/Ux Research/31.png" alt="UX Research - Resultados">
+            <img src="/Ux Research/32.png" alt="UX Research - Resultados">
+            <img src="/Ux Research/33.png" alt="UX Research - Proceso">
+            <img src="/Ux Research/34.png" alt="UX Research - Entrevistas">
+            <img src="/Ux Research/35.png" alt="UX Research - Resultados">
+            <img src="/Ux Research/36.png" alt="UX Research - Resultados">
+        </div>
+    </div>
+
+    <div id="modal-iesmb" class="modal">
+        <button class="close-btn glass" onclick="closeModal('modal-iesmb')">✕ Cerrar</button>
+        <div class="modal-content">
+            <img src="/IESMB/FireShot Capture 014 - IES _Manuel Belgrano_ – Instituto Superior Manuel Belgrano_ - [www.iesmb.edu.ar].png" alt="IESMB - Pantalla Principal">
+            <img src="/IESMB/1.png" alt="IESMB - Pantalla Secundaria">
+        </div>
+    </div>
+
+    <div id="modal-frontend" class="modal">
+        <button class="close-btn glass" onclick="closeModal('modal-frontend')">✕ Cerrar</button>
+        <div class="modal-content">
+            <video src="/IESMB/calculadora.mp4" autoplay loop muted playsinline></video>
+            <video src="/IESMB/error.mp4" autoplay loop muted playsinline></video>
+            <video src="/IESMB/settings.mp4" autoplay loop muted playsinline></video>
+        </div>
+    </div>
+
+    <script>
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+            // Bloquea el scroll del fondo mientras miras el proyecto
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            // Reactiva el scroll del fondo al cerrar
+            document.body.style.overflow = '';
+        }
+
+        // Permitir cerrar el modal presionando la tecla Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                const openModals = document.querySelectorAll('.modal.active');
+                openModals.forEach(modal => {
+                    closeModal(modal.id);
+                });
+            }
+        });
+    </script>
+</body>
+</html>

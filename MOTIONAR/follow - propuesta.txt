@@ -1,0 +1,5 @@
+Para el desafío pensé en una posible actualización para la plataforma: AI Route Brain.
+
+La idea surge de algo que suele pasar en logística real: pequeños imprevistos como tráfico, demoras o incidentes pueden afectar toda la cadena de envíos. A partir de eso imaginé una funcionalidad basada en IA que pueda recalcular rutas automáticamente en tiempo real, ayudando a los transportistas a evitar demoras y mantener el flujo de entregas.
+
+El video intenta mostrar ese momento en que ocurre el problema y cómo el sistema propone una nueva ruta de forma simple y clara, conectando la decisión del software con lo que sucede en el mundo real.
